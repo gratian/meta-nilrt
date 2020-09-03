@@ -32,6 +32,7 @@ BBLAYERS ?= " \
     ${TOPDIR}/../sources/meta-qt5-extra \
     ${TOPDIR}/../sources/meta-ivi/meta-ivi \
     ${TOPDIR}/../sources/meta-rauc \
+    ${TOPDIR}/../sources/meta-clang \
     "
 
 BBLAYERS_NON_REMOVABLE ?= " \
