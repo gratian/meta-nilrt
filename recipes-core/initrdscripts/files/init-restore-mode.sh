@@ -61,7 +61,8 @@ show_console() {
 		echo " ------------------------------------------------------"
 		echo ""
 
-		/usr/bin/setsid /sbin/getty 38400 console --noclear -a root --login-options "-p -- \u"
+#		/usr/bin/setsid /sbin/getty 38400 console --noclear -a root --login-options "-p -- \u"
+		/usr/bin/setsid /sbin/getty 115200 ttyS0 --noclear -a root --login-options "-p -- \u"
 
 		sleep 1
 	done
