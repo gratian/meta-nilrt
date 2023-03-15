@@ -3,9 +3,18 @@
 # All rights reserved.
 
 [ "${VERBOSE}" != "no" ] && echo -n "Starting nicreatecpuacctgroups:"
-mkdir -p /dev/cgroup/cpuacct
-mount -t cgroup -ocpuacct none /dev/cgroup/cpuacct
-cd /dev/cgroup/cpuacct
+
+MOUNT_POINT="/dev/cgroup/cpuacct"
+EXISTING_MOUNT_POINT=$(grep -sE "^cgroup" /proc/mounts | grep -m 1 "cpuacct" | awk '{print $2}')
+
+mkdir -p "$MOUNT_POINT"
+if [ -d "$EXISTING_MOUNT_POINT" ]; then
+	mount --bind "$EXISTING_MOUNT_POINT" "$MOUNT_POINT"
+else
+	mount -t cgroup -ocpuacct none "$MOUNT_POINT"
+fi
+cd "$MOUNT_POINT"
+
 mkdir LabVIEW_Timed-Structures_group
 mkdir LabVIEW_Time-Critical_group
 mkdir ISR_group

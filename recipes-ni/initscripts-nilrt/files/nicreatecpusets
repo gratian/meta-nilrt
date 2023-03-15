@@ -3,9 +3,17 @@
 # All rights reserved.
 
 [ "${VERBOSE}" != "no" ] && echo -n "Starting nicreatecpusets:"
-mkdir -p /dev/cgroup/cpuset
-mount -t cpuset none /dev/cgroup/cpuset
-cd /dev/cgroup/cpuset
+
+MOUNT_POINT="/dev/cgroup/cpuset"
+EXISTING_MOUNT_POINT=$(grep -sE "^cgroup" /proc/mounts | grep -m 1 "cpuset" | awk '{print $2}')
+
+mkdir -p "$MOUNT_POINT"
+if [ -d "$EXISTING_MOUNT_POINT" ]; then
+	mount --bind "$EXISTING_MOUNT_POINT" "$MOUNT_POINT"
+else
+	mount -t cpuset none "$MOUNT_POINT"
+fi
+cd "$MOUNT_POINT"
 
 mkdir LabVIEW_ScanEngine_set
 mkdir LabVIEW_tl_set
