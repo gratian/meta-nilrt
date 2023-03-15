@@ -67,8 +67,8 @@ do_install () {
 	update-rc.d -r ${D} nicheckbiosconfig     start 99 4 5 .
 	update-rc.d -r ${D} nicleanefivars        start 10 S .
 	update-rc.d -r ${D} nicleanstalelinks     start 5  S .
-	update-rc.d -r ${D} nicreatecpuacctgroups start 2  4 5 .
-	update-rc.d -r ${D} nicreatecpusets       start 1  4 5 .
+	update-rc.d -r ${D} nicreatecpuacctgroups start 11  4 5 .
+	update-rc.d -r ${D} nicreatecpusets       start 10  4 5 .
 	update-rc.d -r ${D} nidisablecstates      start 2 3 4 5 S .
 	update-rc.d -r ${D} nipopulateconfigdir   start 35 S .
 	update-rc.d -r ${D} nisetcommitratio      start 99 S .
@@ -114,6 +114,7 @@ do_install_ptest () {
 # /etc/init.d/populateconfig invokes wpa-supplicant.ipk scripts.
 RDEPENDS:${PN} += "\
 	bash \
+	cgroup-lite \
 	niacctbase \
 	update-rc.d \
 	wpa-supplicant \
