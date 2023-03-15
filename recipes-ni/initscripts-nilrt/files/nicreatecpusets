@@ -21,14 +21,14 @@ mkdir system_set
 
 #cpus and mems cannot be empty while tasks are added to tasks file
 #in a cpuset
-cat cpus > ./system_set/cpus
-cat mems > ./system_set/mems
+cat cpuset.cpus > ./system_set/cpuset.cpus
+cat cpuset.mems > ./system_set/cpuset.mems
 
-cat cpus > ./LabVIEW_tl_set/cpus
-cat mems > ./LabVIEW_tl_set/mems
+cat cpuset.cpus > ./LabVIEW_tl_set/cpuset.cpus
+cat cpuset.mems > ./LabVIEW_tl_set/cpuset.mems
 
-cat cpus > ./LabVIEW_ScanEngine_set/cpus
-cat mems > ./LabVIEW_ScanEngine_set/mems
+cat cpuset.cpus > ./LabVIEW_ScanEngine_set/cpuset.cpus
+cat cpuset.mems > ./LabVIEW_ScanEngine_set/cpuset.mems
 
 while read TASK
 do
