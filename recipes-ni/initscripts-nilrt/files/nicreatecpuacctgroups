@@ -11,7 +11,7 @@ mkdir -p "$MOUNT_POINT"
 if [ -d "$EXISTING_MOUNT_POINT" ]; then
 	mount --bind "$EXISTING_MOUNT_POINT" "$MOUNT_POINT"
 else
-	mount -t cgroup -ocpuacct none "$MOUNT_POINT"
+	mount -t cgroup -o cpuacct cgroup "$MOUNT_POINT"
 fi
 cd "$MOUNT_POINT"
 
@@ -31,6 +31,7 @@ done < "tasks"
 
 # If we cannot move a task from the root cpuset, that task is softirq
 # or related to system timer task
+# @todo gratian: revisit this; I don't think it's working as expected
 while read TASK
 do
 	echo $TASK > "./ISR_group/tasks" 2> /dev/null

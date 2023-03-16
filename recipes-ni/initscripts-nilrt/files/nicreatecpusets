@@ -11,7 +11,7 @@ mkdir -p "$MOUNT_POINT"
 if [ -d "$EXISTING_MOUNT_POINT" ]; then
 	mount --bind "$EXISTING_MOUNT_POINT" "$MOUNT_POINT"
 else
-	mount -t cpuset none "$MOUNT_POINT"
+	mount -t cgroup -o cpuset cgroup "$MOUNT_POINT"
 fi
 cd "$MOUNT_POINT"
 
