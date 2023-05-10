@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+	echo "Usage: $0 <source> <destination>"
+	exit 1
+fi
+
+if [[ ! "$TERM" == *xterm* && ! "$TERM" == *rxvt* && ! "$TERM" == *gnome* ]]; then
+	ASCII="--ascii-lines"
+fi
+
+resize > /dev/null
+WIDTH=$(($COLUMNS * 80 / 100))
+HEIGHT=10
+
+output_file="/tmp/nilrt-image-sync.out.$$"
+trap "rm -f $output_file" 0 1 2 5 15
+
+rsync --info=progress2 --no-i-r --delete-during -ah $1 $2 2>/dev/null | \
+	awk '1;{fflush()}' RS='\r|\n' >$output_file & RSYNC_PID=$!
+
+(while kill -0 $RSYNC_PID >/dev/null 2>&1; do
+	RSYNC_OUT=$(tail -n1 $output_file 2>/dev/null)
+	if [ -n "$RSYNC_OUT" ]; then
+		echo "XXX"
+		echo $RSYNC_OUT | awk '{ print $2 }' | sed s/%//
+		echo $RSYNC_OUT | awk '{ printf "transfer:\n"
+					 printf "- size: %s\n", $1
+					 printf "- speed: %s\n", $3
+					 printf "- time: %s\n", $4
+				       }'
+	fi
+	sleep .3
+done) | \
+	dialog \
+		$ASCII \
+		--clear \
+		--screen-center \
+		--erase-on-exit \
+		--backtitle "NI Linux RT Imaging Utility" \
+		--title " disk imaging " \
+		--gauge " " $HEIGHT $WIDTH 0
+
+rm -f "$output_file"

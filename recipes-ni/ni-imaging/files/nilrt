@@ -1,0 +1,34 @@
+#!/bin/bash
+
+DISK_SCRIPT="nilrt-disk"
+IMAGE_SCRIPT="nilrt-image"
+MOUNT_SCRIPT="nilrt-mount"
+PARTITION_SCRIPT="nilrt-partition"
+SYNC_SCRIPT="nilrt-sync"
+
+case "$1" in
+	disk)
+		shift
+		"$DISK_SCRIPT" "$@"
+		;;
+	image)
+		shift
+		"$IMAGE_SCRIPT" "$@"
+		;;
+	mount)
+		shift
+		"$MOUNT_SCRIPT" "$@"
+		;;
+	partition)
+		shift
+		"PARTITION_SCRIPT" "@"
+		;;
+	sync)
+		shift
+		"$SYNC_SCRIPT" "$@"
+		;;
+	*)
+		echo "Usage: $0 [image|mount|sync] [arguments]"
+		exit 1
+		;;
+esac

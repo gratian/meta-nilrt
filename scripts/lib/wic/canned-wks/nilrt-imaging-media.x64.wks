@@ -1,0 +1,6 @@
+# NILRT imaging disk
+
+part /boot --source bootimg-efi --sourceparams="loader=grub-efi" --ondisk sda --label bootfs --align 1024 --use-uuid --active
+part / --source rootfs --ondisk sda --fstype=btrfs --fsoptions="defaults,compress=zstd" --label rootfs --align 1024 --use-uuid
+
+bootloader --ptable gpt --timeout=0 --append="rw quiet loglevel=0 console=tty0 console=ttyS0,115200n8 intel_idle.max_cstate=0 intel_pstate=disable"

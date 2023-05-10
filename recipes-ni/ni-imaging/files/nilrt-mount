@@ -1,0 +1,19 @@
+#!/bin/bash
+
+mdir() {
+	if [ ! -d "$1" ]; then
+		mkdir -p "$1" 1>/dev/null 2>&1
+	fi
+}
+
+mdir "/mnt/disk"
+mount -L "nirootfs" "/mnt/disk" 1>/dev/null 2>&1
+
+mdir "/mnt/disk/grub"
+mount -L "nigrub" "/mnt/disk/grub" 1>/dev/null 2>&1
+
+mdir "/mnt/disk/boot"
+mount -L "nibootfs" "/mnt/disk/boot" 1>/dev/null 2>&1
+
+mdir "/mnt/disk/etc/natinst/share"
+mount -L "niconfig" "/mnt/disk/etc/natinst/share" 1>/dev/null 2>&1

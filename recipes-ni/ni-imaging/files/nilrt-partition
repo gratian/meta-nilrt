@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 <device>"
+	exit 1
+fi
+
+umount "$1"? 2>/dev/null || true
+
+ret=`parted -s $TARGET_DISK mklabel gpt 2>&1` || echo "$ret"
+ret=`parted -s --align optimal $1 mkpart "nigrub" 1MB 16MB 2>&1` || echo "$ret"
+ret=`parted -s --align optimal $1 mkpart "nibootfs" 16MB 200MB 2>&1` || echo "$ret"
+ret=`parted -s --align optimal $1 mkpart "niconfig" 200MB 216MB 2>&1` || echo "$ret"
+ret=`parted -s --align optimal $1 mkpart "nirootfs" 216MB 100% 2>&1` || echo "$ret"
+
+# Per https://www.freedesktop.org/wiki/Specifications/DiscoverablePartitionsSpec/
+#  C12A7328-F81F-11D2-BA4B-00A0C93EC93B -- EFI System Partition
+sgdisk --typecode="1:C12A7328-F81F-11D2-BA4B-00A0C93EC93B" $1
+partprobe -s "$1"
+
+ret=`mkfs.vfat -n "nigrub" ${1}1 2>&1` || echo "$ret"
+ret=`mkfs.ext4 -L "nibootfs" ${1}2 2>&1` || echo "$ret"
+ret=`mkfs.ext4 -L "niconfig" ${1}3 2>&1` || echo "$ret"
+ret=`mkfs.ext4 -L "nirootfs" ${1}4 2>&1` || echo "$ret"

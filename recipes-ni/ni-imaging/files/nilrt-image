@@ -1,0 +1,76 @@
+#!/bin/bash
+
+DIALOG_CANCEL=1
+DIALOG_ESC=255
+
+if [[ ! "$TERM" == *xterm* && ! "$TERM" == *rxvt* && ! "$TERM" == *gnome* ]]; then
+	ASCII="--ascii-lines"
+fi
+
+display_result() {
+	dialog $ASCII \
+	       --title "$1" \
+	       --no-collapse \
+	       --msgbox "$result" 0 0
+}
+
+while true; do
+	exec 3>&1
+	selection=$(dialog \
+			    $ASCII \
+			    --clear \
+			    --screen-center \
+			    --no-cancel \
+			    --backtitle "NI Linux RT Imaging Utility" \
+			    --clear \
+			    --erase-on-exit \
+			    --menu "Please select:" 0 0 4 \
+			    "Get Image" "" \
+			    "Set Image" "" \
+			    "Boot Image" "" \
+			    "List Images" "" \
+			    "Reboot" "" \
+			    "Exit" "" \
+			    2>&1 1>&3)
+	exit_status=$?
+	exec 3>&-
+
+	case $selection in
+		"Get Image" )
+			nilrt-mount
+			if ! btrfs subvolume show "/images/data" > /dev/null 2>&1; then
+				btrfs subvolume create "/images/data" > /dev/null 2>&1
+			fi
+			nilrt-sync /mnt/disk/ /images/data/
+			fw_printenv > /images/data/image.manifest
+			datetime=$(date '+%Y-%m-%d_%H-%M-%S')
+			echo "DateTime=$datetime" >> /images/data/image.manifest
+			btrfs subvolume snapshot /images/data /images/@snapshot-$datetime > /dev/null 2>&1
+			;;
+		"Set Image" )
+			disk=$(nilrt-disk)
+			image=$(nilrt-image-list)
+			if [ -n "$disk" ] && [ -n "$image" ]; then
+				nilrt-partition $disk
+				nilrt-mount
+				nilrt-sync /images/\@"$image"/ /mnt/disk/
+			fi
+			;;
+		"Boot Image" )
+			image=$(nilrt-image-list)
+			result="Boot image: $image"
+			display_result " Boot Image "
+			;;
+		"List Images" )
+			nilrt-image-list
+			;;
+		"Reboot" )
+			reboot > /dev/null 2>&1
+			clear
+			exit 0
+			;;
+		"Exit" )
+			exit 0
+			;;
+	esac
+done

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [[ ! "$TERM" == *xterm* && ! "$TERM" == *rxvt* && ! "$TERM" == *gnome* ]]; then
+	ASCII="--ascii-lines"
+fi
+
+image_list=$(ls -1 /images | grep -s "@snapshot" | sed s/^@//)
+
+dialog_opts=()
+while IFS= read -r line; do
+	dialog_opts+=("$line" "")
+done <<< "$image_list"
+
+result=$(dialog --help-button \
+	       $ASCII \
+	       --clear \
+	       --erase-on-exit \
+	       --backtitle "NI Linux RT Imaging Utility" \
+	       --title " Image List " \
+	       --menu \
+	       "Please select an image from the following list." 0 0 5 \
+	       "${dialog_opts[@]}" \
+	       2>&1 >/dev/tty)
+retval=$?
+
+echo "$result"
+exit $retval

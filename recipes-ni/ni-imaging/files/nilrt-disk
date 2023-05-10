@@ -1,0 +1,126 @@
+#!/bin/bash
+
+MMC_DEVICE_ALLOW_PATH=/etc/nilrt/mmc_storage_device_codes.allow
+
+verbose_mode=${verbose_mode:-0}
+
+if [ "$verbose_mode" -eq 0 ]; then
+	do_silent() { "$@" &>/dev/null; };
+else
+	do_silent() { "$@"; }
+fi
+
+# For a given block device (represented by sysfs path $1 and block device path
+# $2), return zero if suitable for provisioning. If $3 is not True, skip MMC
+# block devices.
+check_block_device () {
+	local path=$1
+	local block=$2
+	local mmc_ok=${3:-false}
+
+	if ! (( $? == 0 )); then
+		(( verbose_mode )) && echo "SKIPPED $path_abbrev: udevadm failed" >&2
+		return 1
+	fi
+
+	# Skip zero-size devices. This catches unattached loop*.
+	if ! (( $(<$path/size) > 0 )); then
+		(( verbose_mode )) && echo "SKIPPED $path_abbrev: size==0" >&2
+		return 1
+	fi
+
+	# Skip removable devices; we're only interested in internal disks. This
+	# catches USBs and CDs.
+	if ! (( $(<$path/removable) == 0 )); then
+		(( verbose_mode )) && echo "SKIPPED $path_abbrev: removable!=0" >&2
+		return 1
+	fi
+
+	# Skip read-only devices. This catches mmcblk*boot*, but *not*
+	# CDs, unless a read-only CD is present in the drive.
+	if ! (( $(<$path/ro) == 0 )); then
+		(( verbose_mode )) && echo "SKIPPED $path_abbrev: ro!=0" >&2
+		return 1
+	fi
+
+	# Skip purely virtual devices. This catches zram* and loop* (again).
+	if ! [[ -d $path/device ]]; then
+		(( verbose_mode )) && echo "SKIPPED $path_abbrev: no device/" >&2
+		return 1
+	fi
+
+	# $path/device/block must exist. This catches mmcblk*boot* (again).
+	if ! ( [[ -d $path/device/block/ ]] || [[ -d $path/device/${path##*/} ]] ); then
+		(( verbose_mode )) && echo "SKIPPED $path_abbrev: no device/block/" >&2
+		return 1
+	fi
+
+	# Some devices have onboard or removable MMC devices which should be
+	# skipped, unless the system's architect has added it to the MMC
+	# whitelist.
+	if ! $mmc_ok; then
+		if [[ "${path##*/}" =~ ^mmc.* ]]; then
+			(( verbose_mode )) && echo "SKIPPED: $path_abbrev: mmc block device && MMC provisioning is not permitted for this device." >&2
+			return 1
+		fi
+	fi
+
+	# @todo: gratian: this needs re-work
+	# Skip the recovery partition itself. Scan all partitions that might be present
+	# at/underneath the given block device.
+	if [[ "$restore" != "migrate" && "$restore" != "backward-migrate" ]] ; then
+		for p in ${block}*; do
+			local label=`lsblk $p -n -o LABEL 2>/dev/null`
+			if [[ "$label" == "NIRECOVERY" ]]; then
+				(( verbose_mode )) && echo "SKIPPED $path_abbrev: contains NIRECOVERY" >&2
+				return 1
+			fi
+			if [[ "$label" == "NIRECOVERY-CD" ]]; then
+				(( verbose_mode )) && echo "SKIPPED $path_abbrev: contains NIRECOVERY-CD" >&2
+				return 1
+			fi
+		done
+	fi
+
+	return 0
+}
+
+
+find_target_block_device()
+{
+	local selected_block=""
+	local mmc_ok=false
+
+	# Check if the machine's DeviceCode is in the MMC device whitelist.
+	if [ -e "${MMC_DEVICE_ALLOW_PATH}" ]; then
+		device_code=$(fw_printenv -n DeviceCode 2>/dev/null)
+		[ -n "$device_code" ] && \
+			grep -iq -E "^\s*(0x)?${device_code}\s*(#.*)?$" "${MMC_DEVICE_ALLOW_PATH}" && \
+			mmc_ok=true
+	else
+		(( verbose_mode )) && echo "Warning: eMMC device whitelist not found. eMMC block devices will be disqualified from provisioning." >&2
+	fi
+
+
+	for path in /sys/block/*; do
+		path_abbrev=${path##/sys/block/}
+		local block=$(udevadm info -r --query=name --path=$path)
+		check_block_device $path $block $mmc_ok || continue
+
+		# Looks good. Select the first device we see.
+		if [[ $selected_block ]]; then
+			(( verbose_mode )) && echo "SKIPPED block device $path_abbrev" >&2
+		else
+			selected_block=$block
+			(( verbose_mode )) && echo "SELECTED block device $path_abbrev" >&2
+		fi
+	done
+
+	if [[ $selected_block ]]; then
+		echo "$selected_block"
+	else
+		return 1
+	fi
+}
+
+find_target_block_device
