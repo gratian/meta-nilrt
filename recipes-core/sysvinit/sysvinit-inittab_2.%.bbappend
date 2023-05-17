@@ -7,4 +7,4 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 # If a console isn't detected, we don't want start_getty to exit as that would
 # cause sysvinit to respawn it.
 # Using tty2 here as it isn't used elsewhere.
-SERIAL_CONSOLES = "38400;tty2"
+SERIAL_CONSOLES = "115200;tty2"
