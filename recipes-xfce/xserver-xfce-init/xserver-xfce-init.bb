@@ -35,6 +35,7 @@ do_install() {
 	fi
 	if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
 		install -d ${D}${systemd_unitdir}/system
+		install -d ${D}${sysconfdir}/default/
 		install -m 0644 xserver-xfce.conf ${D}${sysconfdir}/default/xserver-xfce
 		install -m 0644 ${WORKDIR}/xserver-xfce.service ${D}${systemd_unitdir}/system
 	fi
@@ -43,7 +44,11 @@ do_install() {
 }
 
 
-FILES_${PN} += "${sysconfdir}/default/xserver-xfce"
+FILES:${PN} += " \
+	${sysconfdir}/default/xserver-xfce \
+	${systemd_unitdir}/system/xserver-xfce.service \
+"
+
 # Get util-linux for su
 RDEPENDS:${PN} = "xserver-common (>= 1.30) xinit xfce4-session util-linux"
 RCONFLICTS:${PN} = "xserver-nodm-init"
