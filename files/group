@@ -5,6 +5,10 @@ nogroup:x:65534:
 ni:x:500:
 openvpn:x:499:
 niwscerts:x:498:
+systemd-bus-proxy:x:497:
+systemd-resolve:x:496:
+render:x:495:
+sgx:x:494:
 # free space
 ossec:x:400:
 mysql:x:399:
