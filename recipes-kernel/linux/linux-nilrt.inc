@@ -38,7 +38,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT="1"
 do_kernel_configme[depends] += "libgcc:do_populate_sysroot"
 
 SRC_URI = "\
-	${NILRT_GIT}/${GIT_KERNEL_REPO};protocol=https;branch=${KBRANCH} \
+	git://github.com/gratian/linux.git;protocol=https;branch=dev/nilrt/master/6.1-enable-btrfs \
 	file://export-kernel-headers.sh \
 "
 # Generically use the *latest* rev from the kernel source branch, if none is
