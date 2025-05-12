@@ -15,6 +15,23 @@ inherit packagegroup
 MACHINE_ESSENTIAL_EXTRA_RDEPENDS ?= ""
 MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS ?= ""
 
+ALL_DISTRO_ARM_PACKAGES = "\
+	mtd-utils \
+	mtd-utils-ubifs \
+	u-boot-fw-utils \
+	jitterentropy-rngd \
+"
+
+ALL_DISTRO_x64_PACKAGES = "\
+	linux-firmware-i915 \
+	dmidecode \
+	efibootmgr \
+	efivar \
+	fw-printenv \
+	e2fsprogs \
+	e2fsprogs-mke2fs \
+	pstore-save \
+"
 
 RDEPENDS:${PN} = "\
 	${MACHINE_ESSENTIAL_EXTRA_RDEPENDS} \
@@ -38,15 +55,9 @@ RDEPENDS:${PN} += "\
 	cronie \
 	curl \
 	daemonize \
-	dmidecode \
 	dpkg-start-stop \
-	e2fsprogs \
-	e2fsprogs-mke2fs \
-	efibootmgr \
-	efivar \
 	ethtool \
 	eudev \
-	fw-printenv \
 	glibc-gconv-utf-16 \
 	gptfdisk \
 	init-ifupdown \
@@ -64,7 +75,6 @@ RDEPENDS:${PN} += "\
 	libpam \
 	librtpi \
 	libstdc++ \
-	linux-firmware-i915 \
 	logrotate \
 	lsbinitscripts \
 	modutils-initscripts \
@@ -86,7 +96,6 @@ RDEPENDS:${PN} += "\
 	opkg-keyrings \
 	os-release \
 	pigz \
-	pstore-save \
 	run-postinsts \
 	sudo \
 	sysconfig-settings \
@@ -101,4 +110,7 @@ RDEPENDS:${PN} += "\
 	util-linux-mount \
 	util-linux-runuser \
 	util-linux-umount \
+	${@bb.utils.contains('TARGET_ARCH', 'arm', \
+		'${ALL_DISTRO_ARM_PACKAGES}', \
+		'${ALL_DISTRO_x64_PACKAGES}', d)} \
 "

@@ -26,5 +26,5 @@ do_install() {
 	install -m 0755 ${S}/niwatchdogpet.sh ${D}${sysconfdir}/init.d/niwatchdogpet
 }
 
-
-RDEPENDS:${PN} = "fw-printenv"
+RDEPENDS:${PN}:x64 = "fw-printenv"
+RDEPENDS:${PN}:xilinx-zynq = "u-boot-fw-utils"

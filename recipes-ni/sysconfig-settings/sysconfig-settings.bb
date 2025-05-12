@@ -101,8 +101,9 @@ FILES:${PN} = "\
 	${uixmldir}/nilinuxrt.rtprotocol_enable.* \
 "
 
-RDEPENDS:${PN} += "niacctbase bash fw-printenv"
-
+RDEPENDS:${PN} += "niacctbase bash"
+RDEPENDS:${PN}:x64 += "fw-printenv"
+RDEPENDS:${PN}:xilinx-zynq += "u-boot-fw-utils"
 
 # SUBPACKAGES #
 ###############
@@ -120,8 +121,9 @@ FILES:${PN}-console = "\
 	${settingsdatadir}/consoleout.ini \
 "
 
-RDEPENDS:${PN}-console += "sysconfig-settings fw-printenv"
-
+RDEPENDS:${PN}-console += "sysconfig-settings"
+RDEPENDS:${PN}-console:x64 += "fw-printenv"
+RDEPENDS:${PN}-console:xilinx-zynq += "u-boot-fw-utils"
 
 pkg_postinst_ontarget:${PN}-console () {
 	# add console out if we have a firmware variable for it (x86_64 targets only)

@@ -20,7 +20,9 @@ FILES:${PN} += "\
 
 DEPENDS += "shadow-native pseudo-native niacctbase update-rc.d-native"
 
-RDEPENDS:${PN} += "niacctbase bash fw-printenv"
+RDEPENDS:${PN} += "niacctbase bash"
+RDEPENDS:${PN}:x64 += "fw-printenv"
+#RDEPENDS:${PN}:xilinx-zynq += "u-boot-fw-utils"
 
 do_install () {
 	install -d ${D}${natinstbin}

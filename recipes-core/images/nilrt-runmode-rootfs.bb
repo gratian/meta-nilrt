@@ -8,8 +8,16 @@ IMAGE_INSTALL = "\
 	packagegroup-ni-runmode \
 	packagegroup-ni-wifi \
 	dkms \
+"
+
+IMAGE_INSTALL_x64 += "\
 	nilrt-grub-runmode \
 	"
+
+IMAGE_INSTALL_xilinx-zynq += "\
+	u-boot-fw-utils \
+	bzip2 \
+"
 
 require includes/nilrt-image-base.inc
 require includes/nilrt-xfce.inc

@@ -1,7 +1,16 @@
 # NI infrastructure packages to be installed in the image
 
-NI_PROPRIETARY_SAFEMODE_PACKAGES = "\
-        ni-software-installation-daemon \
+#NI_PROPRIETARY_SAFEMODE_PACKAGES = "\
+#        ni-software-installation-daemon \
+#"
+
+NI_PROPRIETARY_SAFEMODE_PACKAGES = ""
+
+# @todo double check these are not needed on ARM
+NI_PROPRIETARY_x64_PACKAGES = "\
+        ni-sdmon \
+        ni-wifibledd \
+        ni-wireless-ath6kl \
 "
 
 NI_PROPRIETARY_COMMON_PACKAGES = "\
@@ -11,7 +20,6 @@ NI_PROPRIETARY_COMMON_PACKAGES = "\
         ni-avahi-client \
         ni-ca-certs \
         ni-rt-exec-webservice \
-        ni-sdmon \
         ni-service-locator \
         ni-software-action-services \
         ni-software-installation-websvc \
@@ -26,11 +34,11 @@ NI_PROPRIETARY_COMMON_PACKAGES = "\
         ni-webserver-libs \
         ni-webservices-webserver-support \
         ni-wif-landingpage \
-        ni-wifibledd \
-        ni-wireless-ath6kl \
         nicurl \
         nirtcfg \
         nirtmdnsd \
+        ${@bb.utils.contains('TARGET_ARCH', 'x86_64', \
+		'${NI_PROPRIETARY_x64_PACKAGES}', '', d)} \
 "
 
 NI_PROPRIETARY_RUNMODE_PACKAGES = "\

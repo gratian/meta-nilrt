@@ -14,10 +14,14 @@ SRC_URI += "\
 	file://${BPN}.preinst \
 "
 
-IMAGE_INSTALL += "\
-	kernel-image-bzimage \
+IMAGE_INSTALL_x64 += "\
 	fw-printenv \
+	kernel-image-bzimage \
 	nilrt-grub-safemode \
+"
+
+IMAGE_INSTALL_xilinx-zynq += "\
+	u-boot-fw-utils \
 "
 
 RAMDISK_IMAGE = "nilrt-safemode-initramfs"
