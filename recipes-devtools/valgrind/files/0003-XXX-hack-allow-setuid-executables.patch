@@ -1,0 +1,35 @@
+From 2e1b32ec3f29569665dc6bc40bda9611733965d2 Mon Sep 17 00:00:00 2001
+From: Gratian Crisan <gratian.crisan@emerson.com>
+Date: Thu, 23 Oct 2025 16:36:29 -0500
+Subject: [PATCH] XXX, hack: allow setuid executables
+
+Signed-off-by: Gratian Crisan <gratian.crisan@emerson.com>
+---
+ coregrind/m_ume/main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/coregrind/m_ume/main.c b/coregrind/m_ume/main.c
+index 9990b4d..27bcb21 100644
+--- a/coregrind/m_ume/main.c
++++ b/coregrind/m_ume/main.c
+@@ -140,7 +140,7 @@ Int VG_(do_exec_inner)(const HChar* exe, ExeInfo* info)
+    Int fd;
+    Int ret;
+ 
+-   res = VG_(pre_exec_check)(exe, &fd, False/*allow_setuid*/);
++   res = VG_(pre_exec_check)(exe, &fd, True/*allow_setuid*/);
+    if (sr_isError(res))
+       return sr_Err(res);
+ 
+@@ -256,7 +256,7 @@ static Int do_exec_shell_followup(Int ret, const HChar* exe_name, ExeInfo* info)
+       
+       // Was it not executable?
+       } else if (0 != VG_(check_executable)(NULL, exe_name, 
+-                                            False/*allow_setuid*/)) {
++                                            True/*allow_setuid*/)) {
+          VG_(fmsg)("%s: %s\n", exe_name, VG_(strerror)(ret));
+ 
+       // Did it start with "#!"?  If so, it must have been a bad interpreter.
+-- 
+2.34.1
+
