@@ -1,0 +1,10 @@
+[Unit]
+Description=Mount cgroups and setup for LabVIEW RT (if installed)
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=@sbindir@/ni-cgroups-v2 start
+
+[Install]
+WantedBy=multi-user.target
