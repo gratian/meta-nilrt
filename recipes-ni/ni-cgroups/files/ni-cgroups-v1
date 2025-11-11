@@ -18,12 +18,12 @@ setup_cpuset()
 		cp mems "$group/"
 	done
 
-	chown -R lvuser:ni "$CPUSET_DIR"
-
 	# Assign tasks to the system set by default
 	while read TASK; do
 		echo "$TASK" > "./system_set/tasks" 2>/dev/null || true
 	done < tasks
+
+	chown -R lvuser:ni "$CPUSET_DIR"
 }
 
 cleanup_cpuset()
@@ -44,12 +44,12 @@ setup_cpuacct()
 		mkdir -p "$group"
 	done
 
-	chown -R lvuser:ni "$CPUACCT_DIR"
-
 	# Tasks (which can be moved) start by default in the "other" group
 	while read TASK; do
 		echo "$TASK" > "./other_group/tasks" 2>/dev/null || true
 	done < tasks
+
+	chown -R lvuser:ni "$CPUACCT_DIR"
 }
 
 cleanup_cpuacct()
