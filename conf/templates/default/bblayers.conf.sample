@@ -28,6 +28,7 @@ BBLAYERS ?= " \
 	${GIT_REPODIR}/meta-security/meta-tpm \
 	${GIT_REPODIR}/meta-selinux \
 	${GIT_REPODIR}/meta-virtualization \
+	${GIT_REPODIR}/meta-zenoh/meta-zenoh \
 	${GIT_REPODIR}/openembedded-core/meta \
 "
 
